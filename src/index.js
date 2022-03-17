@@ -70,18 +70,38 @@ function renderDog(dog) {
 }
 
 function updateDog(e) {
+    // We need the dog's id if we are going to
+    // want to send a PATCH to the correct dog object.
+    // I went back and added an id property to the
+    // h2 in the dog card since the button already
+    // had an id property set to "dog-button "for CSS purposes.
+    // Since we have access to the button through the event,
+    // we can use event.target.previousElementSibling.id
+    // to grab the id of the h2 which is the dog's id 
     const dogId = e.target.previousElementSibling.id
     let btnStatus = e.target.innerText
+    // the reason we initialized dogStatus without any
+    // value is so that the value may be assigned based on 
+    // a conditional statement before it is passed to the body
+    // of the PATCH request
     let dogStatus;
+
     if (btnStatus === "Bad Dog!") {
+        // Grab the element from the DOM to use good
+        // old DOM manipulation to upodate it's inner Text
         let updateBtn = document.getElementById("dog-button")
         updateBtn.innerText = "Good Dog!"
+        // Assign value to dogstatus
         dogStatus = true
     } else {
         let updateBtn = document.getElementById("dog-button")
         updateBtn.innerText = "Bad Dog!"
         dogStatus = false
     }
+
+    // Now that dogStatus has been assigned, we can use it
+    // to build the body of our PATCH request by passing it as
+    // the value of the isGoodDog key.
     fetch(`http://localhost:3000/pups/${dogId}`, {
         method: "PATCH",
         headers: {
@@ -92,7 +112,10 @@ function updateDog(e) {
         })
     })
     .then(res => res.json())
-    .then(data => console.log(data))
+    // The second response handler is for Developer purposes
+    // so that we may see the PATCH return a successful response
+    // object with isGoodDog value updated
+    // .then(data => console.log(data))
 }
 
 function filterDogs(e) {
@@ -104,9 +127,11 @@ function filterDogs(e) {
     // console.log(filterStatus)
     if (filterStatus === "Filter good dogs: OFF") {
         filterBtn.innerText = "Filter good dogs: ON";
+        // Trigger the fetch that returns only good dogs
         fetchGoodDogs()
     } else {
         filterBtn.innerText = "Filter good dogs: OFF"
+        // The filter is off so return all dogs
         fetchAllDogs()
     }
 }
